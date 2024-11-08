@@ -14,6 +14,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
+        inputDecorationTheme: const InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            borderSide: BorderSide(color: Colors.blue),
+          ),
+          contentPadding:
+              EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+        ),
       ),
       home: const ValidationFormScreen(),
     );
@@ -43,16 +57,23 @@ class _ValidationFormScreenState extends State<ValidationFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Form Validation'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
+              const Text(
+                'Please enter your details',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              _buildTextField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                label: 'Name',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Name is required';
@@ -62,9 +83,9 @@ class _ValidationFormScreenState extends State<ValidationFormScreen> {
                   return null;
                 },
               ),
-              TextFormField(
+              _buildTextField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+                label: 'Email',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Email is required';
@@ -75,9 +96,9 @@ class _ValidationFormScreenState extends State<ValidationFormScreen> {
                   return null;
                 },
               ),
-              TextFormField(
+              _buildTextField(
                 controller: _cnicController,
-                decoration: const InputDecoration(labelText: 'CNIC'),
+                label: 'CNIC',
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -89,9 +110,9 @@ class _ValidationFormScreenState extends State<ValidationFormScreen> {
                   return null;
                 },
               ),
-              TextFormField(
+              _buildTextField(
                 controller: _contactNumberController,
-                decoration: const InputDecoration(labelText: 'Contact Number'),
+                label: 'Contact Number',
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -102,9 +123,9 @@ class _ValidationFormScreenState extends State<ValidationFormScreen> {
                   return null;
                 },
               ),
-              TextFormField(
+              _buildTextField(
                 controller: _addressController,
-                decoration: const InputDecoration(labelText: 'Address'),
+                label: 'Address',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Address is required';
@@ -112,9 +133,9 @@ class _ValidationFormScreenState extends State<ValidationFormScreen> {
                   return null;
                 },
               ),
-              TextFormField(
+              _buildTextField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
+                label: 'Password',
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -135,14 +156,47 @@ class _ValidationFormScreenState extends State<ValidationFormScreen> {
                   if (_formKey.currentState!.validate()) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('Form submitted successfully')),
+                        content: Text('Form submitted successfully'),
+                        backgroundColor: Colors.green,
+                      ),
                     );
                   }
                 },
-                child: const Text('Submit'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Submit',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        obscureText: obscureText,
+        validator: validator,
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: 'Enter your $label',
         ),
       ),
     );
